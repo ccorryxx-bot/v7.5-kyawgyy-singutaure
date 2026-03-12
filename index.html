@@ -3,123 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Kyaw Gyi Signature V 7.8 - Multi-Copy Update</title>
+    <title>Kyaw Gyi Signature V 8.7 - Final Format Update</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
         
-        :root {
-            --emerald: #10b981;
-            --blue: #3b82f6;
-            --bg: #020617;
-        }
-
         body { 
-            background: var(--bg);
+            background: #020617;
             font-family: 'Plus Jakarta Sans', sans-serif;
             color: #f8fafc;
             -webkit-tap-highlight-color: transparent;
-            background-image: 
-                radial-gradient(circle at 10% 10%, rgba(16, 185, 129, 0.08) 0%, transparent 40%),
-                radial-gradient(circle at 90% 90%, rgba(59, 130, 246, 0.08) 0%, transparent 40%);
-            background-attachment: fixed;
+            overflow-x: hidden;
         }
 
         .glass-panel {
-            background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(40px);
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        }
-
-        .btn-m89 {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.4);
-        }
-
-        .btn-9w {
-            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-            box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.4);
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .shimmer-text {
             background: linear-gradient(90deg, #10b981, #60a5fa, #f472b6, #10b981);
-            background-size: 300% auto;
+            background-size: 200% auto;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            animation: shimmer 6s infinite linear;
+            animation: shimmer 4s infinite linear;
         }
 
         @keyframes shimmer {
-            to { background-position: 300% center; }
+            to { background-position: 200% center; }
+        }
+
+        .log-card {
+            opacity: 0;
+            transform: translateY(8px);
+            will-change: transform, opacity;
+            animation: slideIn 0.25s ease-out forwards;
+        }
+
+        @keyframes slideIn {
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .copy-pill {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.2s;
+            transition: all 0.1s ease;
         }
 
         .copy-pill:active {
             background: #10b981;
             color: black;
-            transform: scale(0.9);
-        }
-
-        .log-enter {
-            animation: slideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            transform: scale(0.92);
         }
 
         .no-scrollbar::-webkit-scrollbar { display: none; }
     </style>
 </head>
-<body class="p-4 md:p-10 min-h-screen pb-40">
+<body class="p-4 md:p-8 min-h-screen pb-32">
 
 <div class="max-w-lg mx-auto">
     <!-- Header -->
     <div class="text-center mb-8">
-        <p class="text-[9px] text-emerald-400 font-extrabold uppercase tracking-[0.5em] mb-3">Kyaw Gyi Signature V 7.8</p>
-        <h1 class="text-4xl font-black tracking-tighter uppercase italic shimmer-text">VIP GEN</h1>
-        <p class="text-slate-500 text-[8px] font-bold tracking-[0.2em] uppercase opacity-60 mt-2 italic">Individual Copy Update | M89 Expert</p>
+        <p class="text-[9px] text-emerald-400 font-extrabold uppercase tracking-[0.4em] mb-2">Kyaw Gyi Signature V 8.7</p>
+        <h1 class="text-4xl font-black italic shimmer-text tracking-tighter uppercase">VIP ENGINE</h1>
+        <p class="text-slate-500 text-[8px] font-bold tracking-widest uppercase opacity-60 mt-2 italic">Refined Format | Ultra Smooth</p>
     </div>
 
     <!-- Input Area -->
-    <div class="glass-panel rounded-[2.5rem] p-6 mb-8">
-        <div class="flex justify-between items-center mb-4 px-2">
-            <span class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Phone Database</span>
-            <button onclick="clearAll()" class="text-[10px] text-red-500/70 font-black uppercase tracking-widest">Reset</button>
+    <div class="glass-panel rounded-[2rem] p-6 mb-8 shadow-2xl">
+        <div class="flex justify-between items-center mb-4 px-1">
+            <span class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Phone List</span>
+            <button onclick="clearAll()" class="text-[10px] text-red-500/80 font-black uppercase tracking-widest">Clear</button>
         </div>
         
-        <textarea id="phoneInput" rows="4" 
-            class="w-full bg-black/40 border border-slate-800 rounded-[1.5rem] p-6 text-emerald-50 outline-none transition-all font-mono text-sm resize-none no-scrollbar focus:border-emerald-500/30"
+        <textarea id="phoneInput" rows="3" 
+            class="w-full bg-black/40 border border-slate-800 rounded-2xl p-5 text-emerald-50 outline-none font-mono text-sm resize-none no-scrollbar focus:border-emerald-500/40 transition-colors"
             placeholder="ဖုန်းနံပါတ်များ..."></textarea>
         
         <div class="grid grid-cols-2 gap-4 mt-6">
-            <button onclick="generate('m89')" class="btn-m89 text-black font-black py-5 rounded-[1.2rem] text-[11px] tracking-widest uppercase active:scale-95">
+            <button onclick="generate('m89')" class="bg-gradient-to-br from-emerald-500 to-emerald-700 text-black font-black py-5 rounded-xl text-[11px] tracking-widest uppercase active:scale-95 transition-transform shadow-lg shadow-emerald-900/20">
                 M89.VIP 🔱
             </button>
-            <button onclick="generate('9w')" class="btn-9w text-white font-black py-5 rounded-[1.2rem] text-[11px] tracking-widest uppercase active:scale-95 border-t border-white/10">
+            <button onclick="generate('9w')" class="bg-gradient-to-br from-blue-500 to-blue-700 text-white font-black py-5 rounded-xl text-[11px] tracking-widest uppercase active:scale-95 transition-transform shadow-lg shadow-blue-900/20">
                 9W.VIP 💎
             </button>
         </div>
     </div>
 
-    <div id="toolbar" class="hidden flex items-center justify-between mb-6 px-6">
+    <div id="toolbar" class="hidden flex items-center justify-between mb-6 px-4">
         <span id="count" class="text-2xl font-black text-white">0 Logs</span>
-        <button onclick="copyAll()" class="px-6 py-3 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-emerald-500 hover:text-black transition-all">Copy All</button>
+        <button onclick="copyAll()" class="px-6 py-3 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-full text-[10px] font-black uppercase tracking-widest">Copy All</button>
     </div>
 
     <div id="outputList" class="space-y-12"></div>
 </div>
 
 <!-- Toast Notification -->
-<div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 bg-white text-black px-12 py-3 rounded-full font-black text-[9px] opacity-0 transition-all duration-500 pointer-events-none uppercase tracking-widest z-50 shadow-2xl">
-    Success Copied
+<div id="toast" class="fixed bottom-8 left-1/2 -translate-x-1/2 bg-white text-black px-10 py-3 rounded-full font-black text-[10px] opacity-0 transition-all duration-300 pointer-events-none uppercase tracking-widest z-50 shadow-2xl">
+    Copied!
 </div>
 
 <script>
@@ -127,14 +109,8 @@
     const numbers = "23456789";
     
     const config = {
-        m89: { 
-            link: "*https://tinyurl.com/FreeTokenBonusBadage*", 
-            prefix: "m89",
-        },
-        '9w': { 
-            link: "*https://tinyurl.com/MinatwatBonusSpwdohhh*", 
-            prefix: "9w",
-        }
+        m89: { link: "https://tinyurl.com/FreeTokenBonusBadage", prefix: "m89" },
+        '9w': { link: "https://tinyurl.com/DawNwayWadiCOMM", prefix: "9w" }
     };
     
     let logs = [];
@@ -143,14 +119,6 @@
         let r = "";
         for(let i=0; i<len; i++) r += pool.charAt(Math.floor(Math.random() * pool.length));
         return r;
-    };
-
-    const generateCreds = (type) => {
-        const p = config[type].prefix;
-        const user = type === 'm89' 
-            ? p + rnd(1, letters) + rnd(2, numbers)
-            : p + rnd(2, letters) + rnd(2, numbers);
-        return { user: user, pass: rnd(3, letters) + rnd(3, numbers) };
     };
 
     const formatPhone = (v) => {
@@ -179,91 +147,95 @@
         document.getElementById('toolbar').classList.remove('hidden');
         document.getElementById('count').innerText = lines.length + " Logs";
 
+        const frag = document.createDocumentFragment();
+
         lines.forEach((line, i) => {
             const phone = formatPhone(line);
-            const creds = generateCreds(type);
-            logs.push({ ...creds, phone, type });
+            const user = type === 'm89' ? 'm89' + rnd(1, letters) + rnd(2, numbers) : '9w' + rnd(2, letters) + rnd(2, numbers);
+            const pass = rnd(3, letters) + rnd(3, numbers);
+            logs.push({ user, pass, phone, type });
 
             const div = document.createElement('div');
-            div.className = "log-enter space-y-4";
+            div.className = "log-card space-y-6";
             div.style.animationDelay = (i * 0.05) + "s";
             
             if (type === 'm89') {
                 div.innerHTML = `
-                <div class="glass-panel rounded-[2rem] p-7 border border-white/5 space-y-6">
-                    <!-- Format 1: Game Link -->
+                <div class="glass-panel rounded-[2rem] p-6 border border-white/5 space-y-8 shadow-xl">
+                    <!-- Format 1: Link -->
                     <div class="p-5 bg-white/5 rounded-2xl border border-white/5">
-                        <p class="text-[10px] text-emerald-400 font-black uppercase mb-3 tracking-widest">#1 Link Format</p>
-                        <div class="font-mono text-[13px] space-y-2 text-slate-300">
-                            <p>*လက်ဆောင်ကုဒ်🎁*</p>
+                        <div class="font-mono text-[13px] space-y-3 text-slate-300">
+                            <p class="text-white font-bold">လက်ဆောင်ကုဒ်🎁✓</p>
                             <p>━━━━━━━━━</p>
-                            <p class="text-white font-bold italic">_အော်တိုဝင်ဆော့ လိုက်ပါ။<br>ဂိမ်းဆော့ဝဲလ် ဒေါင်းစရာ မလို။_</p>
+                            <p class="text-white font-bold italic">*အော်တိုဝင်ဆော့ လိုက်ပါ။<br>ဂိမ်းဆော့ဝဲလ် ဒေါင်းစရာ မလို။*</p>
                             <p class="text-white font-bold italic">*တိုက်ရိုက်လင့် 👇*</p>
-                            <p class="text-emerald-400 break-all underline decoration-emerald-500/30 underline-offset-4">${config.m89.link}</p>
+                            <p class="text-emerald-400 font-bold italic">*${config.m89.link}*</p>
+                            <p class="text-slate-300 italic">_ဘောနပ်၊ အချိန်အကန့်သက်များ ရှိနေသည်။√_</p>
                         </div>
-                        <button onclick="copyM89Link(event)" class="w-full mt-5 py-3.5 bg-emerald-500/10 hover:bg-emerald-500 hover:text-black text-emerald-400 border border-emerald-500/20 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all">Copy Link Layout 📋</button>
+                        <button onclick="copyM89Link(event)" class="w-full mt-5 py-3.5 bg-emerald-500/10 hover:bg-emerald-500 hover:text-black text-emerald-400 border border-emerald-500/20 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all">Copy Link Layout 📋</button>
                     </div>
 
-                    <!-- Format 2: Account -->
+                    <!-- Format 2: Account (Updated V8.7) -->
                     <div class="p-5 bg-white/5 rounded-2xl border border-white/5">
-                        <p class="text-[10px] text-blue-400 font-black uppercase mb-4 tracking-widest">#2 Account Format</p>
-                        <div class="font-mono text-[13px] space-y-6 text-slate-300">
+                        <div class="font-mono text-[13px] space-y-5 text-slate-300">
                             <div>
-                                <p>account.</p>
+                                <p class="text-white font-bold italic">*account.*</p>
                                 <p>━━━━</p>
                             </div>
                             
                             <div class="space-y-4">
-                                <div class="flex items-center justify-between group">
-                                    <p>အမည်     __  <span class="text-white font-black text-base">${creds.user}</span></p>
-                                    <button onclick="copyText('${creds.user}', event)" class="copy-pill px-3 py-1.5 rounded-lg text-[9px] font-bold uppercase tracking-wider">Copy Name</button>
+                                <div class="flex items-center justify-between">
+                                    <p>အမည်     __  <span class="text-white font-bold text-base">_${user}_</span></p>
+                                    <button onclick="copyText('_${user}_', event)" class="copy-pill px-4 py-2 rounded-lg text-[8px] font-bold uppercase">Name</button>
                                 </div>
-                                
-                                <div class="flex items-center justify-between group">
-                                    <p>စကားဝှက်  __  <span class="text-white font-black text-base">${creds.pass}</span></p>
-                                    <button onclick="copyText('${creds.pass}', event)" class="copy-pill px-3 py-1.5 rounded-lg text-[9px] font-bold uppercase tracking-wider">Copy Pass</button>
+                                <div class="flex items-center justify-between">
+                                    <p>စကားဝှက်  __  <span class="text-white font-bold text-base">_${pass}_</span></p>
+                                    <button onclick="copyText('_${pass}_', event)" class="copy-pill px-4 py-2 rounded-lg text-[8px] font-bold uppercase">Pass</button>
                                 </div>
-                                
-                                <div class="flex items-center justify-between group">
-                                    <p>နံပါတ်  __  <span class="text-emerald-400 font-black text-base">${phone}</span></p>
-                                    <button onclick="copyText('${phone}', event)" class="copy-pill px-3 py-1.5 rounded-lg text-[9px] font-bold uppercase tracking-wider">Copy Num</button>
+                                <div class="flex items-center justify-between">
+                                    <p>နံပါတ်  __  <span class="text-emerald-400 font-bold text-base">${phone}</span></p>
+                                    <button onclick="copyText('${phone}', event)" class="copy-pill px-4 py-2 rounded-lg text-[8px] font-bold uppercase">Num</button>
                                 </div>
                             </div>
+
+                            <div class="mt-4 pt-4 border-t border-white/5 text-white font-bold">
+                                <p>*အကောင့်ဝင်ပြီးရင် ပြောပါ။<br>ဘောနပ် ရပါမယ် ၊ >>><br>__မလုပ်တက်ရင် မေးနိုင်ပါတယ်။*</p>
+                            </div>
                         </div>
-                        <button onclick="copyM89Acc('${creds.user}', '${creds.pass}', '${phone}', event)" class="w-full mt-6 py-4 bg-blue-500/10 hover:bg-blue-500 hover:text-black text-blue-400 border border-blue-500/20 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all">Copy Full Account Layout 📋</button>
+                        <button onclick="copyM89Acc('${user}', '${pass}', '${phone}', event)" class="w-full mt-6 py-4 bg-blue-500/10 hover:bg-blue-500 hover:text-black text-blue-400 border border-blue-500/20 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all">Copy Account Layout 📋</button>
                     </div>
                 </div>`;
             } else {
                 div.innerHTML = `
-                <div class="glass-panel rounded-[2rem] p-7 border border-white/5 space-y-4">
-                    <p class="text-[10px] text-blue-400 font-black uppercase tracking-widest">9W.VIP Layout</p>
+                <div class="glass-panel rounded-[2rem] p-6 border border-white/5 space-y-4 shadow-xl">
+                    <p class="text-[10px] text-blue-400 font-black uppercase">9W.VIP Layout</p>
                     <div class="font-mono text-[13px] space-y-3">
                         <p class="text-blue-400 font-bold italic">*${config['9w'].link}* 📌</p>
-                        <p>အမည်      __  <span class="text-white font-black">${creds.user}</span></p>
-                        <p>ပက်စဝှက်  __  <span class="text-white font-black">${creds.pass}</span></p>
-                        <p>ဖုန်းနံပါတ်  __  <span class="text-emerald-400 font-black">${phone}</span></p>
+                        <p>အမည်      __  <span class="text-white font-bold">${user}</span></p>
+                        <p>ပက်စဝှက်  __  <span class="text-white font-bold">${pass}</span></p>
+                        <p>ဖုန်းနံပါတ်  __  <span class="text-emerald-400 font-bold">${phone}</span></p>
                         <p class="text-white font-bold italic">*လင့် ထဲမှာနော် ဖရီး ဘောနပ် ။😽*</p>
                     </div>
-                    <button onclick="copy9W('${creds.user}', '${creds.pass}', '${phone}', event)" class="w-full py-4 bg-white/5 hover:bg-blue-500 hover:text-black border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">Copy Full Layout 📋</button>
+                    <button onclick="copy9W('${user}', '${pass}', '${phone}', event)" class="w-full py-4 bg-white/5 hover:bg-blue-500 hover:text-black border border-white/10 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all">Copy Full Layout 📋</button>
                 </div>`;
             }
-            list.appendChild(div);
+            frag.appendChild(div);
         });
-        window.scrollTo({ top: document.getElementById('toolbar').offsetTop - 30, behavior: 'smooth' });
+        list.appendChild(frag);
     };
 
     const copyM89Link = (e) => {
-        const text = `လက်ဆောင်ကုဒ်🎁\n━━━━━━━━━\n\n*အော်တိုဝင်ဆော့ လိုက်ပါ။\nဂိမ်းဆော့ဝဲလ်  ဒေါင်းစရာ မလို။*\n\n*တိုက်ရိုက်လင့် 👇*\n\n${config.m89.link}`;
+        const text = `လက်ဆောင်ကုဒ်🎁✓\n━━━━━━━━━\n\n*အော်တိုဝင်ဆော့ လိုက်ပါ။\nဂိမ်းဆော့ဝဲလ်  ဒေါင်းစရာ မလို။*\n\n*တိုက်ရိုက်လင့် 👇*\n\n*${config.m89.link}*\n\n_ဘောနပ်၊ အချိန်အကန့်သက်များ ရှိနေသည်။√_`;
         copyText(text, e);
     };
 
     const copyM89Acc = (u, p, ph, e) => {
-        const text = `အကောင့်\n━━━━\n\n\nအမည်     __  ${u}\n\nစကားဝှက်  __  ${p}\n\nနံပါတ်  __  ${ph}`;
+        const text = `*account.*\n━━━━\n\nအမည်     __  _${u}_\n\nစကားဝှက်  __  _${p}_\n\nနံပါတ်  __  ${ph}\n\n*အကောင့်ဝင်ပြီးရင် ပြောပါ။\nဘောနပ် ရပါမယ် ၊ >>>\n__မလုပ်တက်ရင် မေးနိုင်ပါတယ်။*`;
         copyText(text, e);
     };
 
     const copy9W = (u, p, ph, e) => {
-        const text = `လင့်ခ် 👇\n*${config['9w'].link}* 📌\n━━━━━━━━━━━━━\n\n\nအမည်      __  ${u}\n\nပက်စဝှက်  __  ${p}\n\nဖုန်းနံပါတ်  __  ${ph}\n\n\n*လင့် ထဲမှာနော် ဖရီး ဘောနပ် ။😽*`;
+        const text = `လင့်ခ် 👇\n*${config['9w'].link}* 📌\n━━━━━━━━━━━━━\n\nအမည်      __  ${u}\n\nပက်စဝှက်  __  ${p}\n\nဖုန်းနံပါတ်  __  ${ph}\n\n*လင့် ထဲမှာနော် ဖရီး ဘောနပ် ။😽*`;
         copyText(text, e);
     };
 
@@ -278,7 +250,7 @@
         const toast = document.getElementById('toast');
         toast.style.opacity = "1";
         toast.style.transform = "translate(-50%, -10px)";
-        setTimeout(() => { toast.style.opacity = "0"; toast.style.transform = "translate(-50%, 0)"; }, 1200);
+        setTimeout(() => { toast.style.opacity = "0"; toast.style.transform = "translate(-50%, 0)"; }, 1000);
     };
 
     const copyAll = () => {
@@ -286,9 +258,9 @@
         let out = "";
         logs.forEach((log, i) => {
             if (log.type === 'm89') {
-                out += `[LINK]\n*လက်ဆောင်ကုဒ်🎁*\n━━━━━━━━━\n\n_အော်တိုဝင်ဆော့ လိုက်ပါ။\nဂိမ်းဆော့ဝဲလ်  ဒေါင်းစရာ မလို။_\n\n*တိုက်ရိုက်လင့် 👇*\n\n${config.m89.link}\n\n[ACCOUNT]\nအကောင့်\n━━━━\n\n\nအမည်     __  ${log.user}\n\nစကားဝှက်  __  ${log.pass}\n\nနံပါတ်  __  ${log.phone}`;
+                out += `[LINK]\nလက်ဆောင်ကုဒ်🎁✓\n━━━━━━━━━\n\n*အော်တိုဝင်ဆော့ လိုက်ပါ။\nဂိမ်းဆော့ဝဲလ်  ဒေါင်းစရာ မလို။*\n\n*တိုက်ရိုက်လင့် 👇*\n\n*${config.m89.link}*\n\n_ဘောနပ်၊ အချိန်အကန့်သက်များ ရှိနေသည်။√_\n\n[ACCOUNT]\n*account.*\n━━━━\n\nအမည်     __  _${log.user}_\n\nစကားဝှက်  __  _${log.pass}_\n\nနံပါတ်  __  ${log.phone}\n\n*အကောင့်ဝင်ပြီးရင် ပြောပါ။\nဘောနပ် ရပါမယ် ၊ >>>\n__မလုပ်တက်ရင် မေးနိုင်ပါတယ်။*`;
             } else {
-                out += `လင့်ခ် 👇\n*${config['9w'].link}* 📌\n━━━━━━━━━━━━━\n\n\nအမည်      __  ${log.user}\n\nပက်စဝှက်  __  ${log.pass}\n\nဖုန်းနံပါတ်  __  ${log.phone}\n\n\n*လင့် ထဲမှာနော် ဖရီး ဘောနပ် ။😽*`;
+                out += `လင့်ခ် 👇\n*${config['9w'].link}* 📌\n━━━━━━━━━━━━━\n\nအမည်      __  ${log.user}\n\nပက်စဝှက်  __  ${log.pass}\n\nဖုန်းနံပါတ်  __  ${log.phone}\n\n*လင့် ထဲမှာနော် ဖရီး ဘောနပ် ။😽*`;
             }
             if (i < logs.length - 1) out += `\n\n====================\n\n`;
         });
