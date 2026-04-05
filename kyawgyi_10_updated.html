@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Kyaw Gyi Signature V 10.0</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        
+        body { 
+            background: #020617;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: #f8fafc;
+            -webkit-tap-highlight-color: transparent;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .shimmer-text {
+            background: linear-gradient(90deg, #10b981, #60a5fa, #f472b6, #10b981);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer 4s infinite linear;
+        }
+
+        @keyframes shimmer {
+            to { background-position: 200% center; }
+        }
+
+        .log-card {
+            will-change: auto;
+        }
+
+        .copy-pill {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.1s ease;
+        }
+
+        .copy-pill:active {
+            background: #10b981;
+            color: black;
+            transform: scale(0.9);
+        }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+
+        .tab-btn { transition: all 0.2s ease; }
+        .tab-btn.active-gen { 
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: black;
+        }
+        .tab-btn.active-hist {
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+            color: white;
+        }
+
+        .hist-card {
+            animation: slideIn 0.25s ease-out forwards;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .day-group {
+            border-left: 2px solid rgba(99, 102, 241, 0.3);
+            padding-left: 12px;
+        }
+
+        .expand-btn { transition: transform 0.2s ease; }
+        .expand-btn.open { transform: rotate(180deg); }
+
+        /* Mini Calendar */
+        .cal-day {
+            width: 32px; height: 32px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 8px;
+            font-size: 10px; font-weight: 700;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            position: relative;
+        }
+        .cal-day:hover:not(.cal-empty):not(.cal-future) { background: rgba(255,255,255,0.08); }
+        .cal-day.cal-future { color: #334155; cursor: default; }
+        .cal-day.cal-empty { cursor: default; }
+        .cal-day.cal-has-data::after {
+            content: '';
+            position: absolute; bottom: 3px; left: 50%; transform: translateX(-50%);
+            width: 4px; height: 4px; border-radius: 50%;
+            background: #10b981;
+        }
+        .cal-day.range-start, .cal-day.range-end {
+            background: #6366f1 !important;
+            color: white !important;
+        }
+        .cal-day.range-mid {
+            background: rgba(99, 102, 241, 0.2);
+            border-radius: 0;
+            color: #a5b4fc;
+        }
+        .cal-day.range-start { border-radius: 8px 0 0 8px; }
+        .cal-day.range-end { border-radius: 0 8px 8px 0; }
+        .cal-day.range-start.range-end { border-radius: 8px; }
+        .cal-day.cal-today { color: #10b981; font-weight: 900; }
+
+        .cal-popup {
+            animation: fadeUp 0.2s ease-out;
+        }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8 min-h-screen pb-32">
+
+<div class="max-w-lg mx-auto">
+    <!-- Header -->
+    <div class="text-center mb-6">
+        <p class="text-[9px] text-emerald-400 font-extrabold uppercase tracking-[0.4em] mb-2">Kyaw Gyi Signature V 10.0</p>
+        <h1 class="text-4xl font-black italic shimmer-text tracking-tighter uppercase">VIP ENGINE</h1>
+        <p class="text-slate-500 text-[8px] font-bold tracking-widest uppercase opacity-60 mt-2 italic">V10.0 | Full Update</p>
+    </div>
+
+    <!-- Tab Switcher -->
+    <div class="flex gap-3 mb-6">
+        <button id="tabGen" onclick="switchTab('gen')" class="tab-btn active-gen flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest">
+            ⚡ Generate
+        </button>
+        <button id="tabHist" onclick="switchTab('hist')" class="tab-btn flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest bg-white/5 text-slate-400 border border-white/10">
+            📊 History
+        </button>
+    </div>
+
+    <!-- GENERATE TAB -->
+    <div id="genTab">
+        <div class="glass-panel rounded-[2rem] p-6 mb-6 shadow-2xl">
+            <div class="flex justify-between items-center mb-4 px-1">
+                <span class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Phone List</span>
+                <button onclick="clearAll()" class="text-[10px] text-red-500/80 font-black uppercase tracking-widest">Clear</button>
+            </div>
+            
+            <textarea id="phoneInput" rows="3" 
+                class="w-full bg-black/40 border border-slate-800 rounded-2xl p-5 text-emerald-50 outline-none font-mono text-sm resize-none no-scrollbar focus:border-emerald-500/40 transition-colors"
+                placeholder="ဖုန်းနံပါတ်များ..."></textarea>
+            
+            <div class="grid grid-cols-2 gap-4 mt-6">
+                <button onclick="generate('m89')" class="bg-gradient-to-br from-emerald-500 to-emerald-700 text-black font-black py-5 rounded-xl text-[11px] tracking-widest uppercase active:scale-95 transition-transform shadow-lg shadow-emerald-900/20">
+                    M89.VIP 🔱
+                </button>
+                <button onclick="generate('9w')" class="bg-gradient-to-br from-blue-500 to-blue-700 text-white font-black py-5 rounded-xl text-[11px] tracking-widest uppercase active:scale-95 transition-transform shadow-lg shadow-blue-900/20">
+                    9W.VIP 💎
+                </button>
+            </div>
+            <div class="mt-3">
+                <button onclick="generate('rng')" class="w-full bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20 border border-violet-500/30 text-violet-300 font-black py-3 rounded-xl text-[10px] tracking-widest uppercase active:scale-95 transition-transform">
+                    🎲 RNG — Account Only
+                </button>
+            </div>
+            <div class="mt-3">
+                <button onclick="generate('m89app')" class="w-full bg-gradient-to-br from-orange-500/20 to-amber-500/20 border border-orange-500/30 text-orange-300 font-black py-3 rounded-xl text-[10px] tracking-widest uppercase active:scale-95 transition-transform">
+                    📱 M89.For App
+                </button>
+            </div>
+
+            <!-- Session Live Counter -->
+            <div id="sessionStats" class="hidden mt-4 grid grid-cols-3 gap-2">
+                <div class="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-3 text-center">
+                    <p class="text-lg font-black text-emerald-400" id="sesM89">0</p>
+                    <p class="text-[7px] text-slate-500 font-bold uppercase tracking-wider mt-0.5">M89</p>
+                </div>
+                <div class="bg-blue-500/10 border border-blue-500/20 rounded-xl p-3 text-center">
+                    <p class="text-lg font-black text-blue-400" id="ses9W">0</p>
+                    <p class="text-[7px] text-slate-500 font-bold uppercase tracking-wider mt-0.5">9W</p>
+                </div>
+                <div class="bg-violet-500/10 border border-violet-500/20 rounded-xl p-3 text-center">
+                    <p class="text-lg font-black text-violet-400" id="sesRNG">0</p>
+                    <p class="text-[7px] text-slate-500 font-bold uppercase tracking-wider mt-0.5">RNG</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="toolbar" class="hidden items-center justify-between mb-6 px-4">
+            <span id="count" class="text-2xl font-black text-white">0 Logs</span>
+            <button onclick="copyAll()" class="px-6 py-3 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-full text-[10px] font-black uppercase tracking-widest">Copy All</button>
+        </div>
+
+        <div id="outputList" class="space-y-12"></div>
+    </div>
+
+    <!-- HISTORY TAB -->
+    <div id="histTab" class="hidden">
+        <!-- Stats Bar -->
+        <div class="grid grid-cols-3 gap-3 mb-6">
+            <div class="glass-panel rounded-2xl p-4 text-center">
+                <p class="text-2xl font-black text-emerald-400" id="statTotal">0</p>
+                <p class="text-[8px] text-slate-500 font-bold uppercase tracking-wider mt-1">Total</p>
+            </div>
+            <div class="glass-panel rounded-2xl p-4 text-center">
+                <p class="text-2xl font-black text-emerald-400" id="statToday">0</p>
+                <p class="text-[8px] text-slate-500 font-bold uppercase tracking-wider mt-1">Today</p>
+            </div>
+            <div class="glass-panel rounded-2xl p-4 text-center">
+                <p class="text-2xl font-black text-slate-300" id="statDays">0</p>
+                <p class="text-[8px] text-slate-500 font-bold uppercase tracking-wider mt-1">Days</p>
+            </div>
+        </div>
+
+        <!-- Clear History Button -->
+        <div class="flex justify-end mb-4">
+            <button onclick="clearHistory()" class="text-[9px] text-red-500/60 font-black uppercase tracking-widest px-4 py-2 rounded-lg border border-red-500/10 hover:border-red-500/30">
+                🗑 Clear All History
+            </button>
+        </div>
+
+        <!-- Type Filter Tabs -->
+        <div class="flex gap-2 mb-4">
+            <button onclick="setTypeFilter('all')" id="tf-all" class="type-filter-btn relative flex-1 py-2 rounded-xl text-[9px] font-black uppercase tracking-wider border">All<span id="tc-all" style="display:none;position:absolute;top:-6px;right:-6px;min-width:16px;height:16px;padding:0 3px;background:#94a3b8;color:#000;font-size:7px;font-weight:900;border-radius:99px;align-items:center;justify-content:center;pointer-events:none"></span></button>
+            <button onclick="setTypeFilter('m89')" id="tf-m89" class="type-filter-btn relative flex-1 py-2 rounded-xl text-[9px] font-black uppercase tracking-wider border">M89<span id="tc-m89" style="display:none;position:absolute;top:-6px;right:-6px;min-width:16px;height:16px;padding:0 3px;background:#34d399;color:#000;font-size:7px;font-weight:900;border-radius:99px;align-items:center;justify-content:center;pointer-events:none"></span></button>
+            <button onclick="setTypeFilter('9w')" id="tf-9w" class="type-filter-btn relative flex-1 py-2 rounded-xl text-[9px] font-black uppercase tracking-wider border">9W<span id="tc-9w" style="display:none;position:absolute;top:-6px;right:-6px;min-width:16px;height:16px;padding:0 3px;background:#60a5fa;color:#000;font-size:7px;font-weight:900;border-radius:99px;align-items:center;justify-content:center;pointer-events:none"></span></button>
+            <button onclick="setTypeFilter('rng')" id="tf-rng" class="type-filter-btn relative flex-1 py-2 rounded-xl text-[9px] font-black uppercase tracking-wider border">RNG<span id="tc-rng" style="display:none;position:absolute;top:-6px;right:-6px;min-width:16px;height:16px;padding:0 3px;background:#a78bfa;color:#000;font-size:7px;font-weight:900;border-radius:99px;align-items:center;justify-content:center;pointer-events:none"></span></button>
+        </div>
+
+        <!-- Date Range Picker -->
+        <div class="glass-panel rounded-2xl p-4 mb-4 relative">
+            <div class="flex items-center justify-between mb-3">
+                <span class="text-[9px] text-slate-400 font-black uppercase tracking-widest">📅 ရက်ချိန်ကြား ရွေးရန်</span>
+                <button onclick="clearDateFilter()" id="clearFilterBtn" class="hidden text-[8px] text-indigo-400 font-black uppercase tracking-widest">✕ Reset</button>
+            </div>
+            <!-- Selected Range Display -->
+            <div class="flex items-center gap-2 mb-3">
+                <div id="dateFromDisplay" onclick="openCal('from')" class="flex-1 bg-black/40 border border-slate-700 rounded-xl px-3 py-2 text-center cursor-pointer hover:border-indigo-500/40 transition-colors">
+                    <p class="text-[8px] text-slate-500 font-bold uppercase">From</p>
+                    <p id="dateFromLabel" class="text-[11px] text-white font-black mt-0.5">—</p>
+                </div>
+                <span class="text-slate-600 font-black text-xs">→</span>
+                <div id="dateToDisplay" onclick="openCal('to')" class="flex-1 bg-black/40 border border-slate-700 rounded-xl px-3 py-2 text-center cursor-pointer hover:border-indigo-500/40 transition-colors">
+                    <p class="text-[8px] text-slate-500 font-bold uppercase">To</p>
+                    <p id="dateToLabel" class="text-[11px] text-white font-black mt-0.5">—</p>
+                </div>
+                <button onclick="applyDateFilter()" id="applyFilterBtn" class="hidden px-4 py-3 bg-indigo-500/20 border border-indigo-500/30 text-indigo-400 rounded-xl text-[8px] font-black uppercase tracking-widest">Go</button>
+            </div>
+
+            <!-- Mini Calendar Popup -->
+            <div id="calPopup" class="hidden cal-popup bg-[#0f172a] border border-white/10 rounded-2xl p-3 shadow-2xl">
+                <div class="flex items-center justify-between mb-3">
+                    <button onclick="calPrev()" class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-white/5 text-slate-400 font-black">‹</button>
+                    <span id="calMonthLabel" class="text-[10px] text-white font-black uppercase tracking-widest"></span>
+                    <button onclick="calNext()" class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-white/5 text-slate-400 font-black">›</button>
+                </div>
+                <div class="grid grid-cols-7 gap-0.5 mb-1">
+                    <div class="cal-day cal-empty text-slate-600">S</div>
+                    <div class="cal-day cal-empty text-slate-600">M</div>
+                    <div class="cal-day cal-empty text-slate-600">T</div>
+                    <div class="cal-day cal-empty text-slate-600">W</div>
+                    <div class="cal-day cal-empty text-slate-600">T</div>
+                    <div class="cal-day cal-empty text-slate-600">F</div>
+                    <div class="cal-day cal-empty text-slate-600">S</div>
+                </div>
+                <div id="calGrid" class="grid grid-cols-7 gap-0.5"></div>
+            </div>
+        </div>
+
+        <!-- History List -->
+        <div id="historyList" class="space-y-4"></div>
+    </div>
+</div>
+
+<!-- Toast Notification -->
+<div id="toast" class="fixed bottom-8 left-1/2 -translate-x-1/2 bg-white text-black px-10 py-3 rounded-full font-black text-[10px] opacity-0 transition-all duration-300 pointer-events-none uppercase tracking-widest z-50 shadow-2xl">
+    Copied!
+</div>
+
+<script>
+    const letters = "abcdefghkmnpstuvwxyz";
+    const numbers = "23456789";
+    
+    const config = {
+        m89: { link: "https://tinyurl.com/M89FreeBonusLimitedTimeRewards", prefix: "m89" },
+        m89app: { link: "https://tinyurl.com/M89FreeRewardForUV5", prefix: "m89" },
+        '9w': { link: "https://tinyurl.com/DawNwayWadiCOMM", prefix: "9w" }
+    };
+    
+    let logs = [];
+    let sessionCount = { m89: 0, '9w': 0, rng: 0, m89app: 0 };
+
+    const updateSessionStats = () => {
+        const el = document.getElementById('sessionStats');
+        el.classList.remove('hidden');
+        document.getElementById('sesM89').textContent = sessionCount['m89'];
+        document.getElementById('ses9W').textContent  = sessionCount['9w'];
+        document.getElementById('sesRNG').textContent = sessionCount['rng'];
+    };
+
+    // ─── Unique Set (persistent, separate from history) ──────────
+    const USED_KEY = 'kyawgyi_used_v1';
+    const usedSet = new Set();
+
+    const loadUsedFromDB = () => {
+        // Load from history DB
+        const db = getDB();
+        Object.values(db).forEach(entries => {
+            entries.forEach(e => { usedSet.add(e.user); usedSet.add(e.pass); });
+        });
+        // Load from persistent usedKeys (survives history clear)
+        try {
+            const saved = JSON.parse(localStorage.getItem(USED_KEY)) || [];
+            saved.forEach(k => usedSet.add(k));
+        } catch {}
+    };
+
+    const persistUsed = (keys) => {
+        try {
+            const existing = JSON.parse(localStorage.getItem(USED_KEY)) || [];
+            const merged = [...new Set([...existing, ...keys])];
+            localStorage.setItem(USED_KEY, JSON.stringify(merged));
+        } catch {}
+    };
+
+    const rnd = (len, pool) => {
+        let r = "";
+        for(let i = 0; i < len; i++) r += pool.charAt(Math.floor(Math.random() * pool.length));
+        return r;
+    };
+
+    const uniqueUser = (type) => {
+        let u, tries = 0;
+        do {
+            if (type === 'm89') u = 'm89' + rnd(1, letters) + rnd(2, numbers);
+            else if (type === '9w') u = '9w' + rnd(2, letters) + rnd(2, numbers);
+            else if (type === 'm89app') u = 'm89' + rnd(1, letters) + rnd(2, numbers);
+            else u = 'm89' + rnd(2, letters) + rnd(2, numbers);
+            tries++;
+        } while (usedSet.has(u) && tries < 500);
+        usedSet.add(u);
+        return u;
+    };
+
+    const uniquePass = () => {
+        let p, tries = 0;
+        do {
+            p = rnd(3, letters) + rnd(3, numbers);
+            tries++;
+        } while (usedSet.has(p) && tries < 500);
+        usedSet.add(p);
+        return p;
+    };
+
+    // ─── DB Helpers ───────────────────────────────────────────────
+    const DB_KEY = 'kyawgyi_db_v1';
+
+    const getDB = () => {
+        try { return JSON.parse(localStorage.getItem(DB_KEY)) || {}; }
+        catch { return {}; }
+    };
+
+    const saveDB = (db) => localStorage.setItem(DB_KEY, JSON.stringify(db));
+
+    const todayKey = () => {
+        const d = new Date();
+        return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    };
+
+    const formatDisplayDate = (key) => {
+        const [y, m, d] = key.split('-');
+        const today = todayKey();
+        const yesterday = (() => {
+            const dt = new Date(); dt.setDate(dt.getDate()-1);
+            return `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`;
+        })();
+        if (key === today) return '📅 Today — ' + key;
+        if (key === yesterday) return '⬅️ Yesterday — ' + key;
+        return '🗓 ' + key;
+    };
+
+    const saveToHistory = (entries) => {
+        const db = getDB();
+        const day = todayKey();
+        if (!db[day]) db[day] = [];
+        entries.forEach(e => db[day].push(e));
+        saveDB(db);
+    };
+
+    // Load used names/passes from history into Set on startup
+    // (init moved after tfStyles declaration below)
+
+    // ─── Utils ────────────────────────────────────────────────────
+    const formatPhone = (v) => {
+        let n = v.replace(/\D/g, '');
+        if (n.startsWith('959')) n = n.substring(3);
+        else if (n.startsWith('09')) n = n.substring(2);
+        else if (n.startsWith('9')) n = n.substring(1);
+        return '9 ' + n;
+    };
+
+    // ─── Calendar & Date Filter ───────────────────────────────────
+    let calTarget = null;
+    let calYear, calMonth;
+    let filterFrom = null, filterTo = null;
+    let typeFilter = 'all';
+
+    const updateTypeCounts = (db) => {
+        const allEntries = Object.values(db).flat();
+        const counts = { all: allEntries.length, m89: 0, '9w': 0, rng: 0 };
+        allEntries.forEach(e => {
+            if (e.type === 'm89' || e.type === 'm89app') counts.m89++;
+            else if (counts[e.type] !== undefined) counts[e.type]++;
+        });
+        ['all','m89','9w','rng'].forEach(k => {
+            const badge = document.getElementById('tc-' + k);
+            if (!badge) return;
+            badge.textContent = counts[k];
+            badge.style.display = counts[k] > 0 ? 'inline-flex' : 'none';
+        });
+    };
+
+    const tfColors = {
+        all:  { on: ['rgba(248,250,252,0.15)', '#f8fafc', 'rgba(248,250,252,0.3)'],  off: ['rgba(255,255,255,0.04)', '#64748b', 'rgba(255,255,255,0.05)'] },
+        m89:  { on: ['rgba(16,185,129,0.2)',   '#34d399', 'rgba(16,185,129,0.4)'],   off: ['rgba(255,255,255,0.04)', '#64748b', 'rgba(255,255,255,0.05)'] },
+        '9w': { on: ['rgba(59,130,246,0.2)',   '#60a5fa', 'rgba(59,130,246,0.4)'],   off: ['rgba(255,255,255,0.04)', '#64748b', 'rgba(255,255,255,0.05)'] },
+        rng:  { on: ['rgba(139,92,246,0.2)',   '#a78bfa', 'rgba(139,92,246,0.4)'],   off: ['rgba(255,255,255,0.04)', '#64748b', 'rgba(255,255,255,0.05)'] },
+    };
+
+    const applyTfColor = (k, active) => {
+        const btn = document.getElementById('tf-' + k);
+        if (!btn) return;
+        const [bg, color, border] = tfColors[k][active ? 'on' : 'off'];
+        btn.style.background = bg;
+        btn.style.color = color;
+        btn.style.borderColor = border;
+    };
+
+    const setTypeFilter = (t) => {
+        typeFilter = t;
+        ['all','m89','9w','rng'].forEach(k => applyTfColor(k, k === t));
+        renderHistory();
+    };
+
+    // ─── Init (run after all functions declared) ─────────────────
+    window.addEventListener('load', () => {
+        loadUsedFromDB();
+        ['all','m89','9w','rng'].forEach(k => applyTfColor(k, k === 'all'));
+    });
+
+    const dateKey = (y, m, d) => `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+
+    const openCal = (target) => {
+        calTarget = target;
+        const popup = document.getElementById('calPopup');
+        const isOpen = !popup.classList.contains('hidden');
+        if (isOpen && calTarget === target) { popup.classList.add('hidden'); return; }
+        const now = new Date();
+        const ref = target === 'from' && filterFrom ? new Date(filterFrom + 'T00:00:00')
+                  : target === 'to'   && filterTo   ? new Date(filterTo   + 'T00:00:00')
+                  : now;
+        calYear = ref.getFullYear(); calMonth = ref.getMonth();
+        renderCal();
+        popup.classList.remove('hidden');
+    };
+
+    const renderCal = () => {
+        const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        document.getElementById('calMonthLabel').textContent = `${months[calMonth]} ${calYear}`;
+        const grid = document.getElementById('calGrid');
+        grid.innerHTML = '';
+        const db = getDB();
+        const dbKeys = Object.keys(db);
+        const today = todayKey();
+        const firstDay = new Date(calYear, calMonth, 1).getDay();
+        const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+
+        // blank cells
+        for (let i = 0; i < firstDay; i++) {
+            const blank = document.createElement('div');
+            blank.className = 'cal-day cal-empty';
+            grid.appendChild(blank);
+        }
+
+        for (let d = 1; d <= daysInMonth; d++) {
+            const key = dateKey(calYear, calMonth + 1, d);
+            const el = document.createElement('div');
+            el.className = 'cal-day';
+            el.textContent = d;
+            if (key > today) { el.classList.add('cal-future'); }
+            else {
+                if (dbKeys.includes(key)) el.classList.add('cal-has-data');
+                if (key === today) el.classList.add('cal-today');
+                // range highlight
+                if (filterFrom && filterTo) {
+                    if (key === filterFrom) el.classList.add('range-start');
+                    else if (key === filterTo) el.classList.add('range-end');
+                    else if (key > filterFrom && key < filterTo) el.classList.add('range-mid');
+                } else if (filterFrom && key === filterFrom) el.classList.add('range-start');
+                else if (filterTo   && key === filterTo)   el.classList.add('range-end');
+
+                el.onclick = () => selectDate(key, d);
+            }
+            grid.appendChild(el);
+        }
+    };
+
+    const selectDate = (key, d) => {
+        if (calTarget === 'from') {
+            filterFrom = key;
+            if (filterTo && filterTo < filterFrom) filterTo = null;
+            document.getElementById('dateFromLabel').textContent = key;
+        } else {
+            filterTo = key;
+            if (filterFrom && filterTo < filterFrom) { filterFrom = filterTo; document.getElementById('dateFromLabel').textContent = filterFrom; }
+            document.getElementById('dateToLabel').textContent = key;
+        }
+        const bothSet = filterFrom && filterTo;
+        document.getElementById('applyFilterBtn').classList.toggle('hidden', !bothSet);
+        document.getElementById('clearFilterBtn').classList.remove('hidden');
+        renderCal();
+        if (bothSet) { document.getElementById('calPopup').classList.add('hidden'); applyDateFilter(); }
+        else if (calTarget === 'from') openCal('to');
+    };
+
+    const calPrev = () => { calMonth--; if (calMonth < 0) { calMonth = 11; calYear--; } renderCal(); };
+    const calNext = () => {
+        const now = new Date();
+        if (calYear === now.getFullYear() && calMonth >= now.getMonth()) return;
+        calMonth++; if (calMonth > 11) { calMonth = 0; calYear++; } renderCal();
+    };
+
+    const applyDateFilter = () => {
+        document.getElementById('calPopup').classList.add('hidden');
+        renderHistory();
+    };
+
+    const clearDateFilter = () => {
+        filterFrom = null; filterTo = null;
+        document.getElementById('dateFromLabel').textContent = '—';
+        document.getElementById('dateToLabel').textContent = '—';
+        document.getElementById('applyFilterBtn').classList.add('hidden');
+        document.getElementById('clearFilterBtn').classList.add('hidden');
+        document.getElementById('calPopup').classList.add('hidden');
+        renderHistory();
+    };
+
+    // close calendar on outside click
+    document.addEventListener('click', (e) => {
+        const popup = document.getElementById('calPopup');
+        if (!popup.classList.contains('hidden') && !popup.contains(e.target)
+            && !e.target.closest('#dateFromDisplay') && !e.target.closest('#dateToDisplay')) {
+            popup.classList.add('hidden');
+        }
+    });
+
+    // ─── Tab Switching ────────────────────────────────────────────
+    const switchTab = (tab) => {
+        const isGen = tab === 'gen';
+        document.getElementById('genTab').classList.toggle('hidden', !isGen);
+        document.getElementById('histTab').classList.toggle('hidden', isGen);
+        document.getElementById('tabGen').className = `tab-btn flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest ${isGen ? 'active-gen' : 'bg-white/5 text-slate-400 border border-white/10'}`;
+        document.getElementById('tabHist').className = `tab-btn flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest ${!isGen ? 'active-hist' : 'bg-white/5 text-slate-400 border border-white/10'}`;
+        if (!isGen) {
+            ['all','m89','9w','rng'].forEach(k => applyTfColor(k, k === typeFilter));
+            renderHistory();
+        }
+    };
+
+    // ─── History Renderer ─────────────────────────────────────────
+    const renderHistory = () => {
+        const db = getDB();
+        let days = Object.keys(db).sort((a, b) => b.localeCompare(a));
+
+        // Apply date filter
+        if (filterFrom || filterTo) {
+            days = days.filter(d => {
+                if (filterFrom && filterTo) return d >= filterFrom && d <= filterTo;
+                if (filterFrom) return d >= filterFrom;
+                if (filterTo)   return d <= filterTo;
+                return true;
+            });
+        }
+
+        const list = document.getElementById('historyList');
+        
+        // Stats
+        let total = 0, todayCnt = 0;
+        const today = todayKey();
+        days.forEach(d => {
+            total += db[d].length;
+            if (d === today) todayCnt = db[d].length;
+        });
+        document.getElementById('statTotal').textContent = total;
+        document.getElementById('statToday').textContent = todayCnt;
+        document.getElementById('statDays').textContent = days.length;
+        updateTypeCounts(db);
+
+        if (!days.length) {
+            list.innerHTML = `<div class="text-center py-16 text-slate-600">
+                <p class="text-4xl mb-3">📭</p>
+                <p class="text-[11px] font-bold uppercase tracking-widest">No history yet</p>
+                <p class="text-[9px] mt-1 opacity-60">Generate formats to see history</p>
+            </div>`;
+            return;
+        }
+
+        list.innerHTML = '';
+        days.forEach((day, di) => {
+            const allEntries = db[day];
+            const entries = typeFilter === 'all' ? allEntries : allEntries.filter(e => e.type === typeFilter);
+            if (!entries.length) return;
+            const m89cnt  = allEntries.filter(e => e.type === 'm89').length;
+            const nwcnt   = allEntries.filter(e => e.type === '9w').length;
+            const rngcnt  = allEntries.filter(e => e.type === 'rng').length;
+            const appcnt  = allEntries.filter(e => e.type === 'm89app').length;
+
+            const wrap = document.createElement('div');
+            wrap.className = 'hist-card glass-panel rounded-2xl overflow-hidden';
+            wrap.style.animationDelay = (di * 0.06) + 's';
+
+            // Day header
+            const header = document.createElement('div');
+            header.className = 'flex items-center justify-between p-4 cursor-pointer select-none';
+            header.innerHTML = `
+                <div>
+                    <p class="text-[11px] font-black text-white">${formatDisplayDate(day)}</p>
+                    <div class="flex gap-3 mt-1">
+                        <span class="text-[9px] text-emerald-400 font-bold">M89: ${m89cnt}</span>
+                        <span class="text-[9px] text-blue-400 font-bold">9W: ${nwcnt}</span>
+                        ${rngcnt ? `<span class="text-[9px] text-violet-400 font-bold">RNG: ${rngcnt}</span>` : ''}
+                        ${appcnt ? `<span class="text-[9px] text-orange-400 font-bold">APP: ${appcnt}</span>` : ''}
+                        <span class="text-[9px] text-slate-500 font-bold">Total: ${entries.length}</span>
+                    </div>
+                </div>
+                <svg class="expand-btn w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>`;
+
+            // Day entries (collapsed by default except today)
+            const body = document.createElement('div');
+            body.className = 'border-t border-white/5 divide-y divide-white/5';
+            if (day !== today) body.classList.add('hidden');
+            else header.querySelector('.expand-btn').classList.add('open');
+
+            entries.forEach((entry, ei) => {
+                // find real index in allEntries for deletion
+                const realIndex = db[day].indexOf(entry);
+                const row = document.createElement('div');
+                row.className = 'p-4 transition-colors relative';
+                
+                const badge = entry.type === 'm89'
+                    ? `<span class="text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-3 py-1 rounded-full font-black tracking-wider">M89</span>`
+                    : entry.type === 'rng'
+                    ? `<span class="text-[10px] bg-violet-500/20 text-violet-400 border border-violet-500/30 px-3 py-1 rounded-full font-black tracking-wider">RNG</span>`
+                    : entry.type === 'm89app'
+                    ? `<span class="text-[10px] bg-orange-500/20 text-orange-400 border border-orange-500/30 px-3 py-1 rounded-full font-black tracking-wider">APP</span>`
+                    : `<span class="text-[10px] bg-blue-500/20 text-blue-400 border border-blue-500/30 px-3 py-1 rounded-full font-black tracking-wider">9W</span>`;
+
+                const rawTime = entry.time || '';
+                const time = (() => {
+                    if (!rawTime) return '';
+                    const [h, m] = rawTime.split(':').map(Number);
+                    const ampm = h >= 12 ? 'PM' : 'AM';
+                    const h12 = h % 12 || 12;
+                    return `${h12}:${String(m).padStart(2,'0')} ${ampm}`;
+                })();
+
+                row.innerHTML = `
+                    <div class="flex items-start gap-2">
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-2 mb-2">
+                                ${badge}
+                                <span class="text-[9px] text-slate-400 font-bold font-mono bg-white/5 px-2 py-0.5 rounded-md">${time}</span>
+                                <span class="text-[9px] text-slate-400 font-bold bg-white/5 px-2 py-0.5 rounded-md">#${ei + 1}</span>
+                                <button onclick="deleteEntry('${day}', ${realIndex})" class="ml-auto flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-lg bg-red-500/10 border border-red-500/20 text-red-500/60 hover:bg-red-500 hover:text-white transition-all text-[10px]">✕</button>
+                            </div>
+                            <div class="font-mono space-y-1">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-[9px] text-slate-500 w-16 flex-shrink-0">အမည်</span>
+                                    <span class="text-[12px] text-white font-bold">${entry.user}</span>
+                                    <button onclick="copyText('${entry.user}', event)" class="copy-pill px-2 py-1 rounded text-[7px] font-bold uppercase ml-auto flex-shrink-0">Copy</button>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-[9px] text-slate-500 w-16 flex-shrink-0">စကားဝှက်</span>
+                                    <span class="text-[12px] text-white font-bold">${entry.pass}</span>
+                                    <button onclick="copyText('${entry.pass}', event)" class="copy-pill px-2 py-1 rounded text-[7px] font-bold uppercase ml-auto flex-shrink-0">Copy</button>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-[9px] text-slate-500 w-16 flex-shrink-0">နံပါတ်</span>
+                                    <span class="text-[12px] text-emerald-400 font-bold">${entry.phone}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+                body.appendChild(row);
+            });
+
+            header.onclick = () => {
+                body.classList.toggle('hidden');
+                header.querySelector('.expand-btn').classList.toggle('open');
+            };
+
+            wrap.appendChild(header);
+            wrap.appendChild(body);
+            list.appendChild(wrap);
+        });
+    };
+
+    // ─── Clear ────────────────────────────────────────────────────
+    const clearAll = () => {
+        document.getElementById('phoneInput').value = "";
+        document.getElementById('outputList').innerHTML = "";
+        document.getElementById('toolbar').classList.add('hidden');
+        document.getElementById('toolbar').classList.remove('flex');
+        document.getElementById('sessionStats').classList.add('hidden');
+        sessionCount = { m89: 0, '9w': 0, rng: 0 };
+        logs = [];
+    };
+
+    const deleteEntry = (day, index) => {
+        showConfirm('ဒီ entry ကို ဖျက်မလား?', () => {
+            const db = getDB();
+            if (!db[day]) return;
+            db[day].splice(index, 1);
+            if (db[day].length === 0) delete db[day];
+            saveDB(db);
+            renderHistory();
+        });
+    };
+
+    const clearHistory = () => {
+        showConfirm('History အားလုံး ဖျက်မလား?', () => {
+            localStorage.removeItem(DB_KEY);
+            renderHistory();
+        });
+    };
+
+    const showConfirm = (msg, onYes) => {
+        const overlay = document.createElement('div');
+        overlay.className = 'fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-6';
+        overlay.innerHTML = `
+            <div class="glass-panel rounded-2xl p-6 w-full max-w-xs shadow-2xl">
+                <p class="text-white font-black text-sm mb-5 text-center">${msg}</p>
+                <div class="flex gap-3">
+                    <button id="confirmNo" class="flex-1 py-3 rounded-xl bg-white/5 border border-white/10 text-slate-400 text-[10px] font-black uppercase tracking-widest">မဖျက်ဘူး</button>
+                    <button id="confirmYes" class="flex-1 py-3 rounded-xl bg-red-500/20 border border-red-500/30 text-red-400 text-[10px] font-black uppercase tracking-widest">ဖျက်မယ်</button>
+                </div>
+            </div>`;
+        document.body.appendChild(overlay);
+        overlay.querySelector('#confirmNo').onclick = () => document.body.removeChild(overlay);
+        overlay.querySelector('#confirmYes').onclick = () => { document.body.removeChild(overlay); onYes(); };
+        overlay.onclick = (e) => { if (e.target === overlay) document.body.removeChild(overlay); };
+    };
+
+    // ─── Generate ─────────────────────────────────────────────────
+    const generate = (type) => {
+        const input = document.getElementById('phoneInput').value;
+        const list = document.getElementById('outputList');
+        const lines = input.split('\n').map(l => l.trim()).filter(l => l !== "");
+        if (!lines.length) return;
+
+        list.innerHTML = "";
+        logs = [];
+        const toolbar = document.getElementById('toolbar');
+        toolbar.classList.remove('hidden');
+        toolbar.classList.add('flex');
+        document.getElementById('count').innerText = lines.length + " Logs";
+
+        const frag = document.createDocumentFragment();
+        const now = new Date();
+        const timeStr = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+        const histEntries = [];
+
+        lines.forEach((line, i) => {
+            const phone = formatPhone(line);
+            const user = uniqueUser(type);
+            const pass = uniquePass();
+            logs.push({ user, pass, phone, type });
+            const displayPass = (type === 'm89' || type === 'm89app') ? `_${pass}_` : pass;
+            histEntries.push({ user, pass: displayPass, phone, type, time: timeStr });
+
+            const div = document.createElement('div');
+            div.className = "log-card space-y-6";
+            div.style.animationDelay = (i * 0.05) + "s";
+            
+            if (type === 'm89') {
+                div.innerHTML = `
+                <div class="glass-panel rounded-[2rem] p-6 border border-white/5 space-y-8 shadow-xl">
+                    <div class="p-5 bg-white/5 rounded-2xl border border-white/5">
+                        <div class="font-mono text-[13px] space-y-3 text-slate-300">
+                            <p class="text-white font-bold">*Free လက်ဆောင်ကုဒ်🎁✓*</p>
+                            <p>━━━━━━━━━</p>
+                            <p class="text-white font-bold italic">*အော်တိုဝင်ဆော့ လိုက်ရုံဘဲ။*</p>
+                            <p class="text-white font-bold italic">*တိုက်ရိုက်လင့် 👇*</p>
+                            <p class="text-emerald-400 font-bold italic">*${config.m89.link}*</p>
+                            <p class="text-slate-300 italic">_ဘောနပ်၊ အချိန်အကန့်သက်များ ရှိနေသည်။√_</p>
+                        </div>
+                        <button onclick="copyM89Link(event)" class="w-full mt-5 py-3.5 bg-emerald-500/10 hover:bg-emerald-500 hover:text-black text-emerald-400 border border-emerald-500/20 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all">Copy Link Layout 📋</button>
+                    </div>
+
+                    <div class="p-5 bg-white/5 rounded-2xl border border-white/5">
+                        <div class="font-mono text-[13px] space-y-5 text-slate-300">
+                            <div>
+                                <p class="text-white font-bold italic">++*account.🎮*++</p>
+                            </div>
+                            
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between">
+                                    <p>အမည်     __  <span class="text-white font-bold text-base">_${user}_</span></p>
+                                    <button onclick="copyText('_${user}_', event)" class="copy-pill px-4 py-2 rounded-lg text-[8px] font-bold uppercase">Name</button>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <p>စကားဝှက်  __  <span class="text-white font-bold text-base">_${pass}_</span></p>
+                                    <button onclick="copyText('_${pass}_', event)" class="copy-pill px-4 py-2 rounded-lg text-[8px] font-bold uppercase">Pass</button>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <p>နံပါတ်  __  <span class="text-emerald-400 font-bold text-base">${phone}</span></p>
+                                    <button onclick="copyText('${phone}', event)" class="copy-pill px-4 py-2 rounded-lg text-[8px] font-bold uppercase">Num</button>
+                                </div>
+                            </div>
+                            <p>━━━━━━━━━━━━</p>
+                            <div class="mt-2 text-white font-bold">
+                                <p>*အကောင့်ဝင်ပြီးရင် ပြောပါ။<br>ဘောနပ်ကုဒ် ရမယ်နော် ၊ >>>*</p>
+                            </div>
+                        </div>
+                        <button onclick="copyM89Acc('${user}', '${pass}', '${phone}', event)" class="w-full mt-6 py-4 bg-blue-500/10 hover:bg-blue-500 hover:text-black text-blue-400 border border-blue-500/20 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all">Copy Account Layout 📋</button>
+                    </div>
+                </div>`;
+            } else if (type === '9w') {
+                div.innerHTML = `
+                <div class="glass-panel rounded-[2rem] p-6 border border-white/5 space-y-4 shadow-xl">
+                    <p class="text-[10px] text-blue-400 font-black uppercase">9W.VIP Layout</p>
+                    <div class="font-mono text-[13px] space-y-3">
+                        <p class="text-blue-400 font-bold italic">*${config['9w'].link}* 📌</p>
+                        <p>အမည်      __  <span class="text-white font-bold">${user}</span></p>
+                        <p>ပက်စဝှက်  __  <span class="text-white font-bold">${pass}</span></p>
+                        <p>ဖုန်းနံပါတ်  __  <span class="text-emerald-400 font-bold">${phone}</span></p>
+                        <p class="text-white font-bold italic">*လင့် ထဲမှာနော် ဖရီး ဘောနပ် ။😽*</p>
+                    </div>
+                    <button onclick="copy9W('${user}', '${pass}', '${phone}', event)" class="w-full py-4 bg-white/5 hover:bg-blue-500 hover:text-black border border-white/10 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all">Copy Full Layout 📋</button>
+                </div>`;
+            } else if (type === 'rng') {
+                div.innerHTML = `
+                <div class="glass-panel rounded-[2rem] p-6 border border-violet-500/10 space-y-4 shadow-xl">
+                    <p class="text-[10px] text-violet-400 font-black uppercase tracking-widest">🎲 RNG Account</p>
+                    <div class="p-5 bg-white/5 rounded-2xl border border-white/5">
+                        <div class="font-mono text-[13px] space-y-5 text-slate-300">
+                            <div>
+                                <p class="text-white font-bold italic">*account.*</p>
+                                <p>━━━━</p>
+                            </div>
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between">
+                                    <p>အမည်     __  <span class="text-white font-bold text-base">${user}</span></p>
+                                    <button onclick="copyText('${user}', event)" class="copy-pill px-4 py-2 rounded-lg text-[8px] font-bold uppercase">Name</button>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <p>စကားဝှက်  __  <span class="text-white font-bold text-base">${pass}</span></p>
+                                    <button onclick="copyText('${pass}', event)" class="copy-pill px-4 py-2 rounded-lg text-[8px] font-bold uppercase">Pass</button>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <p>နံပါတ်  __  <span class="text-emerald-400 font-bold text-base">${phone}</span></p>
+                                    <button onclick="copyText('${phone}', event)" class="copy-pill px-4 py-2 rounded-lg text-[8px] font-bold uppercase">Num</button>
+                                </div>
+                            </div>
+                            <div class="mt-4 pt-4 border-t border-white/5 text-white font-bold">
+                                <p>*အကောင့်ဝင်ပြီးရင် ပြောပါ။<br>ဘောနပ် ရပါမယ် ၊ >>><br>မလုပ်တက်ရင် မေးလို့ရပါတယ်။*</p>
+                            </div>
+                        </div>
+                        <button onclick="copyRNGAcc('${user}', '${pass}', '${phone}', event)" class="w-full mt-6 py-4 bg-violet-500/10 hover:bg-violet-500 hover:text-black text-violet-400 border border-violet-500/20 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all">Copy Account Layout 📋</button>
+                    </div>
+                </div>`;
+            } else if (type === 'm89app') {
+                div.innerHTML = `
+                <div class="space-y-6">
+                    <div class="glass-panel rounded-[2rem] p-6 border border-orange-500/10 shadow-xl">
+                        <div class="p-5 bg-white/5 rounded-2xl border border-white/5">
+                            <div class="font-mono text-[13px] space-y-3 text-slate-300">
+                                <p class="text-white font-bold">*Free လက်ဆောင်ကုဒ်🎁✓*</p>
+                                <p>━━━━━━━━━</p>
+                                <p class="text-white font-bold italic">*ဂိမ်းလင့် !! 👇👇*</p>
+                                <p class="text-orange-400 font-bold italic">*\`\`\`${config.m89app.link}\`\`\`*</p>
+                                <p class="text-slate-300 italic">_ဘောနပ်၊ အချိန်အကန့်သက်များ ရှိနေသည်။√_</p>
+                                <p class="text-white font-bold italic">*ဘော်ဒါ၊ တွေက ဘောနပ် လိုချင်တယ်ဆိုဒီ ++Viber နံပါတ်ကို(Hi)++ ခိုင်းလိုက်ပါ 😄<br>ဘော်ဒါ၊ တွေလဲ ဘောနပ်ပေးမယ်*</p>
+                                <p class="text-white font-bold">*09677957168* 👈</p>
+                            </div>
+                            <button onclick="copyM89AppLink(event)" class="w-full mt-5 py-3.5 bg-orange-500/10 hover:bg-orange-500 hover:text-black text-orange-400 border border-orange-500/20 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all">Copy Link Layout 📋</button>
+                        </div>
+                    </div>
+                    <div class="glass-panel rounded-[2rem] p-6 border border-orange-500/10 shadow-xl">
+                        <div class="p-5 bg-white/5 rounded-2xl border border-white/5">
+                            <div class="font-mono text-[13px] space-y-5 text-slate-300">
+                                <p class="text-white font-bold italic">++*account.🎮*++</p>
+                                <div class="space-y-4">
+                                    <div class="flex items-center justify-between">
+                                        <p>အမည်      →  <span class="text-white font-bold text-base">*_${user}_*</span></p>
+                                        <button onclick="copyText('*_${user}_*', event)" class="copy-pill px-4 py-2 rounded-lg text-[8px] font-bold uppercase">Name</button>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <p>စကားဝှက်  →  <span class="text-white font-bold text-base">*_${pass}_*</span></p>
+                                        <button onclick="copyText('*_${pass}_*', event)" class="copy-pill px-4 py-2 rounded-lg text-[8px] font-bold uppercase">Pass</button>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <p>နံပါတ်    →  <span class="text-emerald-400 font-bold text-base">*${phone}*</span></p>
+                                        <button onclick="copyText('*${phone}*', event)" class="copy-pill px-4 py-2 rounded-lg text-[8px] font-bold uppercase">Num</button>
+                                    </div>
+                                </div>
+                                <p>━━━━━━━━━━━━</p>
+                                <div class="text-white font-bold">
+                                    <p>*အကောင့်ဝင်ပြီးရင် ပြောပါ။<br>ဘောနပ်ကုဒ် ရမယ်နော် ၊ >>>*</p>
+                                </div>
+                            </div>
+                            <button onclick="copyM89AppAcc('${user}', '${pass}', '${phone}', event)" class="w-full mt-6 py-4 bg-orange-500/10 hover:bg-orange-500 hover:text-black text-orange-400 border border-orange-500/20 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all">Copy Account Layout 📋</button>
+                        </div>
+                    </div>
+                </div>`;
+            }
+            frag.appendChild(div);
+        });
+
+        list.appendChild(frag);
+        saveToHistory(histEntries);
+        persistUsed(histEntries.flatMap(e => [e.user, e.pass]));
+        sessionCount[type] = (sessionCount[type] || 0) + lines.length;
+        updateSessionStats();
+    };
+
+    // ─── Copy Functions ───────────────────────────────────────────
+    const copyM89AppLink = (e) => {
+        const text = `*Free လက်ဆောင်ကုဒ်🎁✓*\n━━━━━━━━━\n\n*ဂိမ်းလင့် !! 👇👇*\n\n*\`\`\`${config.m89app.link}\`\`\`*\n\n_ဘောနပ်၊ အချိန်အကန့်သက်များ ရှိနေသည်။√_\n\n*ဘော်ဒါ၊ တွေက ဘောနပ် လိုချင်တယ်ဆိုဒီ ++Viber နံပါတ်ကို(Hi)++ ခိုင်းလိုက်ပါ 😄\nဘော်ဒါ၊ တွေလဲ ဘောနပ်ပေးမယ်*\n\n*09677957168* 👈`;
+        copyText(text, e);
+    };
+
+    const copyM89AppAcc = (u, p, ph, e) => {
+        const text = `++*account.🎮*++\n\nအမည်      →  *_${u}_*\n\nစကားဝှက်  →  *_${p}_*\n\nနံပါတ်    →  *${ph}*\n━━━━━━━━━━━━\n\n*အကောင့်ဝင်ပြီးရင် ပြောပါ။\nဘောနပ်ကုဒ် ရမယ်နော် ၊ >>>*`;
+        copyText(text, e);
+    };
+
+    const copyM89Link = (e) => {
+        const text = `*Free လက်ဆောင်ကုဒ်🎁✓*\n━━━━━━━━━\n\n*အော်တိုဝင်ဆော့ လိုက်ရုံဘဲ။*\n\n*တိုက်ရိုက်လင့် 👇*\n\n*${config.m89.link}*\n\n_ဘောနပ်၊ အချိန်အကန့်သက်များ ရှိနေသည်။√_`;
+        copyText(text, e);
+    };
+
+    const copyM89Acc = (u, p, ph, e) => {
+        const text = `++*account.🎮*++\n\nအမည်     __  _${u}_\n\nစကားဝှက်  __  _${p}_\n\nနံပါတ်  __  ${ph}\n━━━━━━━━━━━━\n\n*အကောင့်ဝင်ပြီးရင် ပြောပါ။\nဘောနပ်ကုဒ် ရမယ်နော် ၊ >>>*`;
+        copyText(text, e);
+    };
+
+    const copyRNGAcc = (u, p, ph, e) => {
+        const text = `*account.*\n━━━━\n\nအမည်     __  ${u}\n\nစကားဝှက်  __  ${p}\n\nနံပါတ်  __  ${ph}\n\n*အကောင့်ဝင်ပြီးရင် ပြောပါ။\nဘောနပ် ရပါမယ် ၊ >>>\nမလုပ်တက်ရင် မေးလို့ရပါတယ်။*`;
+        copyText(text, e);
+    };
+
+    const copy9W = (u, p, ph, e) => {
+        const text = `လင့်ခ် 👇\n*${config['9w'].link}* 📌\n━━━━━━━━━━━━━\n\nအမည်      __  ${u}\n\nပက်စဝှက်  __  ${p}\n\nဖုန်းနံပါတ်  __  ${ph}\n\n*လင့် ထဲမှာနော် ဖရီး ဘောနပ် ။😽*`;
+        copyText(text, e);
+    };
+
+    const copyText = (t, e) => {
+        if(e) e.stopPropagation();
+        navigator.clipboard.writeText(t).catch(() => {
+            const el = document.createElement('textarea');
+            el.value = t;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+        });
+        const toast = document.getElementById('toast');
+        toast.style.opacity = "1";
+        toast.style.transform = "translate(-50%, -10px)";
+        setTimeout(() => { toast.style.opacity = "0"; toast.style.transform = "translate(-50%, 0)"; }, 1000);
+    };
+
+    const copyAll = () => {
+        if (!logs.length) return;
+        let out = "";
+        logs.forEach((log, i) => {
+            if (log.type === 'm89') {
+                out += `*Free လက်ဆောင်ကုဒ်🎁✓*\n━━━━━━━━━\n\n*အော်တိုဝင်ဆော့ လိုက်ရုံဘဲ။*\n\n*တိုက်ရိုက်လင့် 👇*\n\n*${config.m89.link}*\n\n_ဘောနပ်၊ အချိန်အကန့်သက်များ ရှိနေသည်။√_\n\n++*account.🎮*++\n\nအမည်     __  _${log.user}_\n\nစကားဝှက်  __  _${log.pass}_\n\nနံပါတ်  __  ${log.phone}\n━━━━━━━━━━━━\n\n*အကောင့်ဝင်ပြီးရင် ပြောပါ။\nဘောနပ်ကုဒ် ရမယ်နော် ၊ >>>*`;
+            } else if (log.type === 'm89app') {
+                out += `*Free လက်ဆောင်ကုဒ်🎁✓*\n━━━━━━━━━\n\n*ဂိမ်းလင့် !! 👇👇*\n\n*\`\`\`${config.m89app.link}\`\`\`*\n\n_ဘောနပ်၊ အချိန်အကန့်သက်များ ရှိနေသည်။√_\n\n*ဘော်ဒါ၊ တွေက ဘောနပ် လိုချင်တယ်ဆိုဒီ ++Viber နံပါတ်ကို(Hi)++ ခိုင်းလိုက်ပါ 😄\nဘော်ဒါ၊ တွေလဲ ဘောနပ်ပေးမယ်*\n\n*09677957168* 👈\n\n++*account.🎮*++\n\nအမည်      →  *_${log.user}_*\n\nစကားဝှက်  →  *_${log.pass}_*\n\nနံပါတ်    →  *${log.phone}*\n━━━━━━━━━━━━\n\n*အကောင့်ဝင်ပြီးရင် ပြောပါ။\nဘောနပ်ကုဒ် ရမယ်နော် ၊ >>>*`;
+            } else if (log.type === '9w') {
+                out += `လင့်ခ် 👇\n*${config['9w'].link}* 📌\n━━━━━━━━━━━━━\n\nအမည်      __  ${log.user}\n\nပက်စဝှက်  __  ${log.pass}\n\nဖုန်းနံပါတ်  __  ${log.phone}\n\n*လင့် ထဲမှာနော် ဖရီး ဘောနပ် ။😽*`;
+            } else {
+                out += `*account.*\n━━━━\n\nအမည်     __  ${log.user}\n\nစကားဝှက်  __  ${log.pass}\n\nနံပါတ်  __  ${log.phone}\n\n*အကောင့်ဝင်ပြီးရင် ပြောပါ။\nဘောနပ် ရပါမယ် ၊ >>>*`;
+            }
+            if (i < logs.length - 1) out += `\n\n====================\n\n`;
+        });
+        copyText(out);
+    };
+</script>
+
+</body>
+</html>
